@@ -76,7 +76,8 @@ export default function Home() {
   async function saveCue(data, isNew) {
     setSaving(true)
     if (isNew) {
-   await supabase.from('cues').insert([data])
+    const { id, _isNew, ...insertData } = data
+    await supabase.from('cues').insert([insertData])
     } else {
       await supabase.from('cues').update(data).eq('id', data.id)
     }
