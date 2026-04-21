@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
-const STAGES = ['writing', 'pending mixouts', 'pending client review', 'complete']
+const STAGES = ['work in progress', 'pending mixouts', 'pending client review', 'complete']
 const PRIORITIES = ['High', 'Medium', 'Low']
 const QCS = ['', 'PASS', 'FAIL', 'HOLD']
 
@@ -19,13 +19,13 @@ function isOverdue(c) {
 
 function StageBadge({ stage }) {
   const styles = {
-    'writing': { background: '#E6F1FB', color: '#185FA5' },
+    'work in progress': { background: '#E6F1FB', color: '#185FA5' },
     'pending mixouts': { background: '#FAEEDA', color: '#854F0B' },
     'pending client review': { background: '#EEEDFE', color: '#534AB7' },
     'complete': { background: '#E1F5EE', color: '#0F6E56' },
   }
   const labels = {
-    'writing': 'writing',
+    'work in progress': 'WIP',
     'pending mixouts': 'mixouts',
     'pending client review': 'in review',
     'complete': 'complete',
@@ -104,7 +104,7 @@ export default function Home() {
   const companies = [...new Set(cues.map(c => c.company).filter(Boolean))]
 
   const filtered = cues.filter(c => {
-    if (activeTab === 'writing' && c.stage !== 'writing') return false
+    if (activeTab === 'wip' && c.stage !== 'work in progress') return false
     if (activeTab === 'pending' && !c.stage?.startsWith('pending')) return false
     if (activeTab === 'complete' && c.stage !== 'complete') return false
     if (filterPri && c.priority !== filterPri) return false
@@ -117,7 +117,7 @@ export default function Home() {
   function openDetail(c) { setModal(c) }
   function openEdit(c) { setForm({ ...c, _isNew: false }) }
   function openNew() {
-    setForm({ _isNew: true, stage: 'writing', priority: 'Medium', id: '', title: '', company: '', project: '', assignment: '', composer: '', lead: '', assigned: '', deadline: '', qc: '', bpm: '', key: '', instruments: '', duration: '', brief: '', mp3_name: '', mp3_url: '' })
+    setForm({ _isNew: true, stage: 'work in progress', priority: 'Medium', id: '', title: '', company: '', project: '', assignment: '', composer: '', lead: '', assigned: '', deadline: '', qc: '', bpm: '', key: '', instruments: '', duration: '', brief: '', mp3_name: '', mp3_url: '' })
   }
 
   function togglePlay() {
@@ -149,7 +149,7 @@ export default function Home() {
       </div>
 
       <div style={{ display: 'flex', borderBottom: '0.5px solid #e5e5e5', marginBottom: '1rem' }}>
-        {[['all','All'],['writing','Writing'],['pending','Pending'],['complete','Complete']].map(([k,l]) => (
+        {[['all','All'],['wip','WIP'],['pending','Pending'],['complete','Complete']].map(([k,l]) => (
           <div key={k} onClick={() => setActiveTab(k)} style={{ padding: '7px 13px', fontSize: 13, cursor: 'pointer', color: activeTab===k ? '#1D9E75' : '#888', borderBottom: activeTab===k ? '2px solid #1D9E75' : '2px solid transparent', fontWeight: activeTab===k ? 500 : 400, marginBottom: -0.5 }}>{l}</div>
         ))}
       </div>
@@ -266,7 +266,7 @@ export default function Home() {
               <input value={form.assignment||''} onChange={e => setForm(f=>({...f,assignment:e.target.value}))} style={inp} />
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: '.85rem' }}>
-              <div><label style={lbl}>Stage</label><select value={form.stage||'writing'} onChange={e=>setForm(f=>({...f,stage:e.target.value}))} style={inp}>{STAGES.map(s=><option key={s}>{s}</option>)}</select></div>
+              <div><label style={lbl}>Stage</label><select value={form.stage||'work in progress'} onChange={e=>setForm(f=>({...f,stage:e.target.value}))} style={inp}>{STAGES.map(s=><option key={s}>{s}</option>)}</select></div>
               <div><label style={lbl}>Priority</label><select value={form.priority||'Medium'} onChange={e=>setForm(f=>({...f,priority:e.target.value}))} style={inp}>{PRIORITIES.map(p=><option key={p}>{p}</option>)}</select></div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: '.85rem' }}>
