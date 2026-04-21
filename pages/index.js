@@ -100,7 +100,7 @@ export default function Home() {
   const overdue = cues.filter(isOverdue).length
   const complete = cues.filter(c => c.stage === 'complete').length
 
-  const composers = [...new Set(cues.map(c => c.composer).filter(Boolean))]
+  const producers = [...new Set(cues.map(c => c.composer).filter(Boolean))]
   const companies = [...new Set(cues.map(c => c.company).filter(Boolean))]
 
   const filtered = cues.filter(c => {
@@ -134,7 +134,7 @@ export default function Home() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: 10 }}>
         <div style={{ fontSize: 20, fontWeight: 500 }}>song<span style={{ color: '#1D9E75' }}>tracker</span></div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => setSubmitForm(true)} style={{ height: 32, padding: '0 12px', fontSize: 13, background: 'transparent', border: '0.5px solid #ccc', borderRadius: 8, cursor: 'pointer' }}>composer portal</button>
+          <button onClick={() => setSubmitForm(true)} style={{ height: 32, padding: '0 12px', fontSize: 13, background: 'transparent', border: '0.5px solid #ccc', borderRadius: 8, cursor: 'pointer' }}>producer portal</button>
           <button onClick={openNew} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 500, background: '#1D9E75', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer' }}>+ new cue</button>
         </div>
       </div>
@@ -161,8 +161,8 @@ export default function Home() {
           {PRIORITIES.map(p => <option key={p}>{p}</option>)}
         </select>
         <select value={filterComp} onChange={e => setFilterComp(e.target.value)} style={{ ...inp, width: 'auto', marginTop: 0 }}>
-          <option value="">All composers</option>
-          {composers.map(c => <option key={c}>{c}</option>)}
+          <option value="">All producers</option>
+          {producers.map(c => <option key={c}>{c}</option>)}
         </select>
         <select value={filterCo} onChange={e => setFilterCo(e.target.value)} style={{ ...inp, width: 'auto', marginTop: 0 }}>
           <option value="">All companies</option>
@@ -205,7 +205,7 @@ export default function Home() {
           <div style={{ background: '#fff', borderRadius: 12, border: '0.5px solid #e5e5e5', width: 580, maxHeight: '85vh', overflowY: 'auto', padding: '1.5rem' }}>
             <h2 style={{ fontSize: 16, fontWeight: 500, marginBottom: '1rem' }}>{modal.title || 'Untitled cue'} <span style={{ fontSize: 13, fontWeight: 400, color: '#aaa' }}>#{modal.id}</span></h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: '1rem' }}>
-              {[['Company', modal.company],['Project', modal.project],['Assignment', modal.assignment],['Stage', null, <StageBadge stage={modal.stage} />],['Priority', null, <PriBadge priority={modal.priority} />],['QC', null, <QcBadge qc={modal.qc} />],['Composer', modal.composer],['Lead', modal.lead],['Assigned', modal.assigned ? new Date(modal.assigned).toLocaleDateString() : '—'],['Deadline', modal.deadline ? new Date(modal.deadline).toLocaleDateString() : '—', null, isOverdue(modal)],['BPM', modal.bpm],['Key', modal.key],['Duration', modal.duration],['Instruments', modal.instruments]].map(([label, val, node, od]) => (
+              {[['Company', modal.company],['Project', modal.project],['Assignment', modal.assignment],['Stage', null, <StageBadge stage={modal.stage} />],['Priority', null, <PriBadge priority={modal.priority} />],['QC', null, <QcBadge qc={modal.qc} />],['Producer', modal.composer],['Lead', modal.lead],['Assigned', modal.assigned ? new Date(modal.assigned).toLocaleDateString() : '—'],['Deadline', modal.deadline ? new Date(modal.deadline).toLocaleDateString() : '—', null, isOverdue(modal)],['BPM', modal.bpm],['Key', modal.key],['Duration', modal.duration],['Instruments', modal.instruments]].map(([label, val, node, od]) => (
                 <div key={label} style={{ fontSize: 13 }}>
                   <span style={{ display: 'block', fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '.3px', marginBottom: 2 }}>{label}</span>
                   {node || <span style={{ color: od ? '#A32D2D' : '#111', fontWeight: od ? 500 : 400 }}>{val || '—'}</span>}
@@ -229,8 +229,8 @@ export default function Home() {
               </div>
             </>}
             <div style={{ background: '#f5f5f3', borderRadius: 8, padding: '12px 14px', marginBottom: '1rem' }}>
-              <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Composer submission link</div>
-              <div style={{ fontSize: 12, color: '#888', marginBottom: 6 }}>Share with your composer to submit track details.</div>
+              <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Producer submission link</div>
+              <div style={{ fontSize: 12, color: '#888', marginBottom: 6 }}>Share with your producer to submit track details.</div>
               <div style={{ fontSize: 12, color: '#185FA5', background: '#fff', borderRadius: 6, padding: '8px 10px', border: '0.5px solid #ddd', wordBreak: 'break-all', cursor: 'pointer' }} onClick={() => navigator.clipboard?.writeText(`${window.location.origin}/submit?id=${modal.id}`)}>
                 {typeof window !== 'undefined' ? `${window.location.origin}/submit?id=${modal.id}` : `/submit?id=${modal.id}`}
               </div>
@@ -270,7 +270,7 @@ export default function Home() {
               <div><label style={lbl}>Priority</label><select value={form.priority||'Medium'} onChange={e=>setForm(f=>({...f,priority:e.target.value}))} style={inp}>{PRIORITIES.map(p=><option key={p}>{p}</option>)}</select></div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: '.85rem' }}>
-              <div><label style={lbl}>Composer</label><input value={form.composer||''} onChange={e=>setForm(f=>({...f,composer:e.target.value}))} style={inp} /></div>
+              <div><label style={lbl}>Producer</label><input value={form.composer||''} onChange={e=>setForm(f=>({...f,composer:e.target.value}))} style={inp} /></div>
               <div><label style={lbl}>Lead</label><input value={form.lead||''} onChange={e=>setForm(f=>({...f,lead:e.target.value}))} style={inp} /></div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: '.85rem' }}>
@@ -278,83 +278,4 @@ export default function Home() {
               <div><label style={lbl}>Deadline</label><input type="date" value={form.deadline||''} onChange={e=>setForm(f=>({...f,deadline:e.target.value}))} style={inp} /></div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: '.85rem' }}>
-              <div><label style={lbl}>BPM</label><input value={form.bpm||''} onChange={e=>setForm(f=>({...f,bpm:e.target.value}))} style={inp} /></div>
-              <div><label style={lbl}>Key</label><input value={form.key||''} onChange={e=>setForm(f=>({...f,key:e.target.value}))} style={inp} /></div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: '.85rem' }}>
-              <div><label style={lbl}>Duration</label><input value={form.duration||''} onChange={e=>setForm(f=>({...f,duration:e.target.value}))} style={inp} placeholder="1:30" /></div>
-              <div><label style={lbl}>QC</label><select value={form.qc||''} onChange={e=>setForm(f=>({...f,qc:e.target.value}))} style={inp}>{QCS.map(q=><option key={q} value={q}>{q||'—'}</option>)}</select></div>
-            </div>
-            <div style={{ marginBottom: '.85rem' }}>
-              <label style={lbl}>Featured instruments</label>
-              <input value={form.instruments||''} onChange={e=>setForm(f=>({...f,instruments:e.target.value}))} style={inp} />
-            </div>
-            <div style={{ marginBottom: '.85rem' }}>
-              <label style={lbl}>Creative brief</label>
-              <textarea value={form.brief||''} onChange={e=>setForm(f=>({...f,brief:e.target.value}))} style={{...inp,minHeight:80,lineHeight:1.5,resize:'vertical'}} />
-            </div>
-            <div style={{ marginBottom: '.85rem' }}>
-              <label style={lbl}>MP3 URL</label>
-              <input value={form.mp3_url||''} onChange={e=>setForm(f=>({...f,mp3_url:e.target.value}))} style={inp} placeholder="https://..." />
-            </div>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '0.5px solid #e5e5e5' }}>
-              {!form._isNew && <button onClick={() => { deleteCue(form.id); setForm(null) }} style={{ height: 32, padding: '0 12px', fontSize: 13, background: 'transparent', border: '0.5px solid #F09595', borderRadius: 8, cursor: 'pointer', color: '#A32D2D', marginRight: 'auto' }}>Delete</button>}
-              <button onClick={() => setForm(null)} style={{ height: 32, padding: '0 12px', fontSize: 13, background: 'transparent', border: '0.5px solid #ddd', borderRadius: 8, cursor: 'pointer' }}>Cancel</button>
-              <button onClick={() => saveCue(form, form._isNew)} disabled={saving} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 500, background: '#1D9E75', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', opacity: saving ? .7 : 1 }}>{saving ? 'Saving...' : 'Save'}</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {submitForm && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '3rem 1rem', zIndex: 100 }} onClick={e => { if (e.target === e.currentTarget) setSubmitForm(false) }}>
-          <div style={{ background: '#fff', borderRadius: 12, border: '0.5px solid #e5e5e5', width: 500, maxHeight: '85vh', overflowY: 'auto', padding: '1.5rem' }}>
-            <h2 style={{ fontSize: 16, fontWeight: 500, marginBottom: '.5rem' }}>Composer submission portal</h2>
-            <p style={{ fontSize: 13, color: '#888', marginBottom: '1rem', lineHeight: 1.6 }}>Composers fill this in to submit completed track details.</p>
-            <SubmitFormContent onDone={async () => { await fetchCues(); setSubmitForm(false) }} />
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-function SubmitFormContent({ onDone }) {
-  const [s, setS] = useState({ id: '', title: '', bpm: '', key: '', instruments: '', duration: '', mp3_url: '' })
-  const [msg, setMsg] = useState('')
-  const inp = { width: '100%', fontSize: 13, padding: '7px 10px', border: '0.5px solid #ddd', borderRadius: 8, background: '#fff', color: '#111', marginTop: 2 }
-  const lbl = { display: 'block', fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '.3px', marginBottom: 2 }
-
-  async function submit() {
-    const id = parseInt(s.id)
-    if (!id) { setMsg('Please enter a valid cue #'); return }
-    const updates = {}
-    if (s.title) updates.title = s.title
-    if (s.bpm) updates.bpm = s.bpm
-    if (s.key) updates.key = s.key
-    if (s.instruments) updates.instruments = s.instruments
-    if (s.duration) updates.duration = s.duration
-    if (s.mp3_url) { updates.mp3_url = s.mp3_url; updates.mp3_name = s.mp3_url }
-    updates.stage = 'pending mixouts'
-    const { error } = await supabase.from('cues').update(updates).eq('id', id)
-    if (error) { setMsg('Error: cue #' + id + ' not found'); return }
-    setMsg('Submitted! Cue #' + id + ' updated.')
-    setTimeout(onDone, 1500)
-  }
-
-  return <>
-    <div style={{ marginBottom: '.85rem' }}><label style={lbl}>Cue # (seq)</label><input value={s.id} onChange={e=>setS(x=>({...x,id:e.target.value}))} style={inp} placeholder="e.g. 19266" /></div>
-    <div style={{ marginBottom: '.85rem' }}><label style={lbl}>Track title</label><input value={s.title} onChange={e=>setS(x=>({...x,title:e.target.value}))} style={inp} /></div>
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: '.85rem' }}>
-      <div><label style={lbl}>BPM</label><input value={s.bpm} onChange={e=>setS(x=>({...x,bpm:e.target.value}))} style={inp} /></div>
-      <div><label style={lbl}>Key</label><input value={s.key} onChange={e=>setS(x=>({...x,key:e.target.value}))} style={inp} /></div>
-    </div>
-    <div style={{ marginBottom: '.85rem' }}><label style={lbl}>Featured instruments</label><input value={s.instruments} onChange={e=>setS(x=>({...x,instruments:e.target.value}))} style={inp} /></div>
-    <div style={{ marginBottom: '.85rem' }}><label style={lbl}>Duration</label><input value={s.duration} onChange={e=>setS(x=>({...x,duration:e.target.value}))} style={inp} placeholder="1:30" /></div>
-    <div style={{ marginBottom: '.85rem' }}><label style={lbl}>MP3 URL</label><input value={s.mp3_url} onChange={e=>setS(x=>({...x,mp3_url:e.target.value}))} style={inp} placeholder="Paste a link to your MP3" /></div>
-    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '0.5px solid #e5e5e5' }}>
-      {msg && <span style={{ fontSize: 13, color: '#1D9E75', alignSelf: 'center', marginRight: 'auto' }}>{msg}</span>}
-      <button onClick={submit} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 500, background: '#1D9E75', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer' }}>Submit</button>
-    </div>
-  </>
-}
+              <div><label style={lbl}>BPM</label><input value={form.bpm||''} onChange={e=>setForm(f=>({...f,bpm:e.target.value}))} style={inp} /></
