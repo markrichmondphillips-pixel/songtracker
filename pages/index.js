@@ -247,8 +247,7 @@ export default function Home() {
       {form && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '3rem 1rem', zIndex: 100 }} onClick={e => { if (e.target === e.currentTarget) setForm(null) }}>
           <div style={{ background: '#fff', borderRadius: 12, border: '0.5px solid #e5e5e5', width: 580, maxHeight: '85vh', overflowY: 'auto', padding: '1.5rem' }}>
-            <h2 style={{ fontSize: 16, fontWeight: 500, marginBottom: '1rem' }}>{form._isNew ? 'New S
-        ong' : `Edit song #${form.id}`}</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 500, marginBottom: '1rem' }}>{form._isNew ? 'New Song' : 'Edit Song #' + form.id}</h2>
             {[
               [['Seq #','id','text',!form._isNew],['Track title','title','text',false]],
               [['Company','company','text',false],['Project','project','text',false]],
