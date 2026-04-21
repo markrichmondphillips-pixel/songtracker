@@ -134,8 +134,8 @@ export default function Home() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: 10 }}>
         <div style={{ fontSize: 20, fontWeight: 500 }}>song<span style={{ color: '#1D9E75' }}>tracker</span></div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => setSubmitForm(true)} style={{ height: 32, padding: '0 12px', fontSize: 13, background: 'transparent', border: '0.5px solid #ccc', borderRadius: 8, cursor: 'pointer' }}>producer portal</button>
-          <button onClick={openNew} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 500, background: '#1D9E75', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer' }}>+ new cue</button>
+          <button onClick={() => setSubmitForm(true)} style={{ height: 32, padding: '0 12px', fontSize: 13, background: 'transparent', border: '0.5px solid #ccc', borderRadius: 8, cursor: 'pointer' }}>Producer Portal</button>
+          <button onClick={openNew} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 500, background: '#1D9E75', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer' }}>+ new song</button>
         </div>
       </div>
 
@@ -182,7 +182,7 @@ export default function Home() {
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={8} style={{ padding: '2.5rem', textAlign: 'center', color: '#bbb' }}>No cues match your filters.</td></tr>
+                <tr><td colSpan={8} style={{ padding: '2.5rem', textAlign: 'center', color: '#bbb' }}>No songs match your filters.</td></tr>
               ) : filtered.map(c => (
                 <tr key={c.id} onClick={() => openDetail(c)} style={{ borderBottom: '0.5px solid #e5e5e5', cursor: 'pointer' }} onMouseEnter={e => e.currentTarget.style.background='#f9f9f7'} onMouseLeave={e => e.currentTarget.style.background='transparent'}>
                   <td style={{ padding: '9px 10px', color: '#aaa', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.id}</td>
@@ -203,7 +203,7 @@ export default function Home() {
       {modal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '3rem 1rem', zIndex: 100 }} onClick={e => { if (e.target === e.currentTarget) setModal(null) }}>
           <div style={{ background: '#fff', borderRadius: 12, border: '0.5px solid #e5e5e5', width: 580, maxHeight: '85vh', overflowY: 'auto', padding: '1.5rem' }}>
-            <h2 style={{ fontSize: 16, fontWeight: 500, marginBottom: '1rem' }}>{modal.title || 'Untitled cue'} <span style={{ fontSize: 13, fontWeight: 400, color: '#aaa' }}>#{modal.id}</span></h2>
+            <h2 style={{ fontSize: 16, fontWeight: 500, marginBottom: '1rem' }}>{modal.title || 'Untitled song'} <span style={{ fontSize: 13, fontWeight: 400, color: '#aaa' }}>#{modal.id}</span></h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: '1rem' }}>
               {[['Company', modal.company],['Project', modal.project],['Assignment', modal.assignment],['Stage', null, <StageBadge stage={modal.stage} />],['Priority', null, <PriBadge priority={modal.priority} />],['QC', null, <QcBadge qc={modal.qc} />],['Producer', modal.composer],['Lead', modal.lead],['Assigned', modal.assigned ? new Date(modal.assigned).toLocaleDateString() : '—'],['Deadline', modal.deadline ? new Date(modal.deadline).toLocaleDateString() : '—', null, isOverdue(modal)],['BPM', modal.bpm],['Key', modal.key],['Duration', modal.duration],['Instruments', modal.instruments]].map(([label, val, node, od]) => (
                 <div key={label} style={{ fontSize: 13 }}>
@@ -247,7 +247,7 @@ export default function Home() {
       {form && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '3rem 1rem', zIndex: 100 }} onClick={e => { if (e.target === e.currentTarget) setForm(null) }}>
           <div style={{ background: '#fff', borderRadius: 12, border: '0.5px solid #e5e5e5', width: 580, maxHeight: '85vh', overflowY: 'auto', padding: '1.5rem' }}>
-            <h2 style={{ fontSize: 16, fontWeight: 500, marginBottom: '1rem' }}>{form._isNew ? 'New cue' : `Edit cue #${form.id}`}</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 500, marginBottom: '1rem' }}>{form._isNew ? 'New song' : `Edit song #${form.id}`}</h2>
             {[
               [['Seq #','id','text',!form._isNew],['Track title','title','text',false]],
               [['Company','company','text',false],['Project','project','text',false]],
@@ -282,7 +282,7 @@ export default function Home() {
               <div><label style={lbl}>Key</label><input value={form.key||''} onChange={e=>setForm(f=>({...f,key:e.target.value}))} style={inp} /></div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: '.85rem' }}>
-              <div><label style={lbl}>Duration</label><input value={form.duration||''} onChange={e=>setForm(f=>({...f,duration:e.target.value}))} style={inp} placeholder="1:30" /></div>
+              <div><label style={lbl}>Duration</label><input value={form.duration||''} onChange={e=>setForm(f=>({...f,duration:e.target.value}))} style={inp} placeholder="" /></div>
               <div><label style={lbl}>QC</label><select value={form.qc||''} onChange={e=>setForm(f=>({...f,qc:e.target.value}))} style={inp}>{QCS.map(q=><option key={q} value={q}>{q||'—'}</option>)}</select></div>
             </div>
             <div style={{ marginBottom: '.85rem' }}>
@@ -309,7 +309,7 @@ export default function Home() {
       {submitForm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '3rem 1rem', zIndex: 100 }} onClick={e => { if (e.target === e.currentTarget) setSubmitForm(false) }}>
           <div style={{ background: '#fff', borderRadius: 12, border: '0.5px solid #e5e5e5', width: 500, maxHeight: '85vh', overflowY: 'auto', padding: '1.5rem' }}>
-            <h2 style={{ fontSize: 16, fontWeight: 500, marginBottom: '.5rem' }}>Producer submission portal</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 500, marginBottom: '.5rem' }}>Producer Portal</h2>
             <p style={{ fontSize: 13, color: '#888', marginBottom: '1rem', lineHeight: 1.6 }}>Producers fill this in to submit completed track details.</p>
             <SubmitFormContent onDone={async () => { await fetchCues(); setSubmitForm(false) }} />
           </div>
@@ -350,7 +350,7 @@ function SubmitFormContent({ onDone }) {
       <div><label style={lbl}>Key</label><input value={s.key} onChange={e=>setS(x=>({...x,key:e.target.value}))} style={inp} /></div>
     </div>
     <div style={{ marginBottom: '.85rem' }}><label style={lbl}>Featured instruments</label><input value={s.instruments} onChange={e=>setS(x=>({...x,instruments:e.target.value}))} style={inp} /></div>
-    <div style={{ marginBottom: '.85rem' }}><label style={lbl}>Duration</label><input value={s.duration} onChange={e=>setS(x=>({...x,duration:e.target.value}))} style={inp} placeholder="1:30" /></div>
+    <div style={{ marginBottom: '.85rem' }}><label style={lbl}>Duration</label><input value={s.duration} onChange={e=>setS(x=>({...x,duration:e.target.value}))} style={inp} /></div>
     <div style={{ marginBottom: '.85rem' }}><label style={lbl}>MP3 URL</label><input value={s.mp3_url} onChange={e=>setS(x=>({...x,mp3_url:e.target.value}))} style={inp} placeholder="Paste a link to your MP3" /></div>
     <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '0.5px solid #e5e5e5' }}>
       {msg && <span style={{ fontSize: 13, color: '#1D9E75', alignSelf: 'center', marginRight: 'auto' }}>{msg}</span>}
