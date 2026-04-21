@@ -76,9 +76,7 @@ export default function Home() {
   async function saveCue(data, isNew) {
     setSaving(true)
     if (isNew) {
-      const maxId = cues.length ? Math.max(...cues.map(c => c.id || 0)) : 19000
-      data.id = maxId + 1
-      await supabase.from('cues').insert([data])
+   await supabase.from('cues').insert([data])
     } else {
       await supabase.from('cues').update(data).eq('id', data.id)
     }
