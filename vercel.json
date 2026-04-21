@@ -1,0 +1,6 @@
+{
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://nljsbuqisrtvnxnemalh.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sanNidXFpc3J0dm54bmVtYWxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3OTExMTgsImV4cCI6MjA5MjM2NzExOH0.poPzcT3hPSRsmwS4oOhv9wrQzTpSNTA3mX_ak097cgw"
+  }
+}
