@@ -37,7 +37,6 @@ export default function Submit() {
       setMsg('Sending file to storage...')
       await fetch(presignedUrl, {
         method: 'PUT',
-        headers: { 'Content-Type': mp3File.type },
         body: mp3File,
       })
       setMsg('Saving submission...')
