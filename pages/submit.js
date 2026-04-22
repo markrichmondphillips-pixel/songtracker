@@ -28,17 +28,13 @@ export default function Submit() {
     setUploading(true)
     setMsg('Uploading MP3...')
     try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: mp3File.name, contentType: mp3File.type }),
-      })
-      const { presignedUrl, publicUrl } = await res.json()
-      setMsg('Sending file to storage...')
-      await fetch(presignedUrl, {
-        method: 'PUT',
-        body: mp3File,
-      })
+const workerUrl = `https://songtracker-upload.markrichmondphillips.workers.dev/?filename=${encodeURIComponent(mp3File.name)}`
+const uploadRes = await fetch(workerUrl, {
+  method: 'PUT',
+  headers: { 'Content-Type': mp3File.type },
+  body: mp3File,
+})
+const { url: publicUrl } = await uploadRes.json()
       setMsg('Saving submission...')
       const updates = {}
       if (s.title) updates.title = s.title
