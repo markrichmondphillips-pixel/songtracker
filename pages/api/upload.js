@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
 
 export default function Submit() {
   const [cue, setCue] = useState(null)
