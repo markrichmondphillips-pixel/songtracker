@@ -5,7 +5,9 @@ export default function Submit() {
   const [cue, setCue] = useState(null)
   const [loading, setLoading] = useState(true)
   const [submitted, setSubmitted] = useState(false)
-  const [s, setS] = useState({ title: '', bpm: '', key: '', instruments: '', duration: '', mp3_url: '' })
+  const [s, setS] = useState({ title: '', bpm: '', key: '', instruments: '', duration: '' })
+  const [mp3File, setMp3File] = useState(null)
+  const [uploading, setUploading] = useState(false)
   const [msg, setMsg] = useState('')
 
   useEffect(() => {
@@ -20,31 +22,62 @@ export default function Submit() {
     setLoading(false)
   }
 
+  async function uploadMp3(file) {
+    const reader = new FileReader()
+    return new Promise((resolve, reject) => {
+      reader.onload = async (e) => {
+        const base64 = e.target.result.split(',')[1]
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: file.name,
+            contentType: file.type,
+            fileData: base64,
+          }),
+        })
+        const data = await res.json()
+        if (data.url) resolve(data.url)
+        else reject('Upload failed')
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
   async function submit() {
     if (!cue) return
-    const updates = {}
-    if (s.title) updates.title = s.title
-    if (s.bpm) updates.bpm = s.bpm
-    if (s.key) updates.key = s.key
-    if (s.instruments) updates.instruments = s.instruments
-    if (s.duration) updates.duration = s.duration
-    if (s.mp3_url) { updates.mp3_url = s.mp3_url; updates.mp3_name = s.mp3_url }
-    updates.stage = 'pending mixouts'
-    const { error } = await supabase.from('cues').update(updates).eq('id', cue.id)
-    if (error) { setMsg('Something went wrong. Please try again.'); return }
-    setSubmitted(true)
+    if (!mp3File) { setMsg('Please attach an MP3 file before submitting.'); return }
+    setUploading(true)
+    setMsg('Uploading MP3...')
+    try {
+      const mp3Url = await uploadMp3(mp3File)
+      const updates = {}
+      if (s.title) updates.title = s.title
+      if (s.bpm) updates.bpm = s.bpm
+      if (s.key) updates.key = s.key
+      if (s.instruments) updates.instruments = s.instruments
+      if (s.duration) updates.duration = s.duration
+      updates.mp3_url = mp3Url
+      updates.mp3_name = mp3File.name
+      updates.stage = 'pending mixouts'
+      const { error } = await supabase.from('cues').update(updates).eq('id', cue.id)
+      if (error) { setMsg('Something went wrong saving your submission.'); setUploading(false); return }
+      setSubmitted(true)
+    } catch (e) {
+      setMsg('MP3 upload failed. Please try again.')
+      setUploading(false)
+    }
   }
 
   const inp = { width: '100%', fontSize: 14, padding: '9px 12px', border: '0.5px solid #ddd', borderRadius: 8, background: '#fff', color: '#111', marginTop: 3, boxSizing: 'border-box' }
   const lbl = { display: 'block', fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '.4px', marginBottom: 2, marginTop: 16 }
 
   if (loading) return <div style={{ fontFamily: 'system-ui', padding: '3rem', textAlign: 'center', color: '#aaa' }}>Loading...</div>
-
   if (!cue) return <div style={{ fontFamily: 'system-ui', padding: '3rem', textAlign: 'center', color: '#aaa' }}>Assignment not found.</div>
 
   if (submitted) return (
     <div style={{ fontFamily: 'system-ui', maxWidth: 540, margin: '4rem auto', padding: '0 1.5rem', textAlign: 'center' }}>
-      <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
+      <div style={{ fontSize: 40, marginBottom: 12 }}>✓</div>
       <h1 style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>Submitted!</h1>
       <p style={{ color: '#888', fontSize: 14 }}>Your delivery has been received. We will be in touch.</p>
     </div>
@@ -74,7 +107,7 @@ export default function Submit() {
       </div>
 
       <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 4 }}>Your delivery</div>
-      <div style={{ fontSize: 13, color: '#888', marginBottom: 4 }}>Fill in your track details and submit when ready.</div>
+      <div style={{ fontSize: 13, color: '#888', marginBottom: 4 }}>Fill in your track details and attach your MP3.</div>
 
       <label style={lbl}>Track title</label>
       <input value={s.title} onChange={e => setS(x => ({...x, title: e.target.value}))} style={inp} placeholder="e.g. Late Night Drive" />
@@ -90,13 +123,20 @@ export default function Submit() {
       <label style={lbl}>Duration</label>
       <input value={s.duration} onChange={e => setS(x => ({...x, duration: e.target.value}))} style={inp} placeholder="e.g. 1:32" />
 
-      <label style={lbl}>MP3 link</label>
-      <input value={s.mp3_url} onChange={e => setS(x => ({...x, mp3_url: e.target.value}))} style={inp} placeholder="Dropbox, Drive, WeTransfer link..." />
+      <label style={lbl}>MP3 file</label>
+      <div style={{ marginTop: 3, border: '1px dashed #ddd', borderRadius: 8, padding: '1rem', textAlign: 'center', cursor: 'pointer', background: mp3File ? '#E1F5EE' : '#fafaf8' }} onClick={() => document.getElementById('mp3input').click()}>
+        <input id="mp3input" type="file" accept="audio/mp3,audio/mpeg" style={{ display: 'none' }} onChange={e => setMp3File(e.target.files[0])} />
+        {mp3File ? (
+          <div style={{ fontSize: 13, color: '#0F6E56', fontWeight: 500 }}>{mp3File.name}</div>
+        ) : (
+          <div style={{ fontSize: 13, color: '#aaa' }}>Click to select your MP3 file</div>
+        )}
+      </div>
 
-      {msg && <div style={{ fontSize: 13, color: '#A32D2D', marginTop: 12 }}>{msg}</div>}
+      {msg && <div style={{ fontSize: 13, color: uploading ? '#854F0B' : '#A32D2D', marginTop: 12 }}>{msg}</div>}
 
-      <button onClick={submit} style={{ marginTop: 24, width: '100%', height: 44, background: '#1D9E75', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 500, cursor: 'pointer' }}>
-        Submit delivery
+      <button onClick={submit} disabled={uploading} style={{ marginTop: 24, width: '100%', height: 44, background: uploading ? '#aaa' : '#1D9E75', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 500, cursor: uploading ? 'not-allowed' : 'pointer' }}>
+        {uploading ? 'Uploading...' : 'Submit delivery'}
       </button>
     </div>
   )
