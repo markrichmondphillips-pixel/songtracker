@@ -25,18 +25,18 @@ export default async function handler(req, res) {
   const credential = `${accessKeyId}/${credentialScope}`
   const expiresIn = 3600
 
-  const queryParams = new URLSearchParams({
-    'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
-    'X-Amz-Credential': credential,
-    'X-Amz-Date': datetime,
-    'X-Amz-Expires': String(expiresIn),
-    'X-Amz-SignedHeaders': 'host',
-  })
+  const queryString = [
+    `X-Amz-Algorithm=AWS4-HMAC-SHA256`,
+    `X-Amz-Credential=${encodeURIComponent(credential)}`,
+    `X-Amz-Date=${datetime}`,
+    `X-Amz-Expires=${expiresIn}`,
+    `X-Amz-SignedHeaders=host`,
+  ].join('&')
 
   const canonicalRequest = [
     'PUT',
     `/${bucket}/${key}`,
-    queryParams.toString(),
+    queryString,
     `host:${host}\n`,
     'host',
     'UNSIGNED-PAYLOAD',
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
   const signingKey = hmac(hmac(hmac(hmac(`AWS4${secretAccessKey}`, date), region), service), 'aws4_request')
   const signature = hmac(signingKey, stringToSign, 'hex')
 
-  const presignedUrl = `https://${host}/${bucket}/${key}?${queryParams.toString()}&X-Amz-Signature=${signature}`
+  const presignedUrl = `https://${host}/${bucket}/${key}?${queryString}&X-Amz-Signature=${signature}`
   const publicUrl = `${process.env.R2_BUCKET_URL}/${key}`
 
   res.status(200).json({ presignedUrl, publicUrl })
