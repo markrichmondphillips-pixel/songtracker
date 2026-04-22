@@ -22,49 +22,39 @@ export default function Submit() {
     setLoading(false)
   }
 
-  async function uploadMp3(file) {
-    const reader = new FileReader()
-    return new Promise((resolve, reject) => {
-      reader.onload = async (e) => {
-        const base64 = e.target.result.split(',')[1]
-        const res = await fetch('/api/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            filename: file.name,
-            contentType: file.type,
-            fileData: base64,
-          }),
-        })
-        const data = await res.json()
-        if (data.url) resolve(data.url)
-        else reject('Upload failed')
-      }
-      reader.readAsDataURL(file)
-    })
-  }
-
   async function submit() {
     if (!cue) return
     if (!mp3File) { setMsg('Please attach an MP3 file before submitting.'); return }
     setUploading(true)
     setMsg('Uploading MP3...')
     try {
-      const mp3Url = await uploadMp3(mp3File)
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: mp3File.name, contentType: mp3File.type }),
+      })
+      const { presignedUrl, publicUrl } = await res.json()
+      setMsg('Sending file to storage...')
+      await fetch(presignedUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': mp3File.type },
+        body: mp3File,
+      })
+      setMsg('Saving submission...')
       const updates = {}
       if (s.title) updates.title = s.title
       if (s.bpm) updates.bpm = s.bpm
       if (s.key) updates.key = s.key
       if (s.instruments) updates.instruments = s.instruments
       if (s.duration) updates.duration = s.duration
-      updates.mp3_url = mp3Url
+      updates.mp3_url = publicUrl
       updates.mp3_name = mp3File.name
       updates.stage = 'pending mixouts'
       const { error } = await supabase.from('cues').update(updates).eq('id', cue.id)
       if (error) { setMsg('Something went wrong saving your submission.'); setUploading(false); return }
       setSubmitted(true)
     } catch (e) {
-      setMsg('MP3 upload failed. Please try again.')
+      setMsg('Upload failed. Please try again.')
       setUploading(false)
     }
   }
